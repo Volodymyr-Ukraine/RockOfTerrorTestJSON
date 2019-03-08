@@ -22,6 +22,10 @@ class ViewController: UIViewController {
     private var currentPage: Int = 0
     private var ownAlertController : UIAlertController
     private let testState: Bool = true
+    private var inventoryShowState: Bool = true
+    private var temporaryString: String = String()
+    private var powerOfMonkHart: Int? = nil
+
     // MARK: -
     // MARK: Initializers
     
@@ -56,7 +60,28 @@ class ViewController: UIViewController {
         self.present(self.ownAlertController, animated: true, completion: nil)
     }
     
+    @IBAction func SwipeGesture(_ sender: Any) {
+        if self.inventoryShowState {
+            self.temporaryString = self.textStoryLabel.text!
+            var itemsText = "Доступний інвентар та примітки: \n"
+            self.items.forEach{ itemName in
+                itemsText += (itemName + "\n")
+            }
+            self.textStoryLabel.text = itemsText
+            self.inventoryShowState = false
+        } else {
+            self.textStoryLabel.text = self.temporaryString
+            self.inventoryShowState = true
+        }
+        
+    }
+    
+    
     private func setPage(_ pageNumber: Int)  {
+        if pageNumber == 0 {
+            self.items = []
+            self.currentTime = 0
+        }
         guard let startInfo = self.datasArray.first(where: { (info) -> Bool in
             return (info.stateID == pageNumber)
         }) else {
@@ -70,13 +95,36 @@ class ViewController: UIViewController {
             self.textStoryLabel.textAlignment = .justified
         }
         if pageNumber == 0 {self.currentTime = 0}
-        self.currentTime += Int(startInfo.time)
+        
+        if self.items.contains("Поранена нога") {
+            self.currentTime += 2*Int(startInfo.time)
+        } else {
+            self.currentTime += Int(startInfo.time)
+        }
         
         guard self.currentTime >= 0 else {
-            print("End of the Game!")
+            let uControl = UIAlertController(title: "Що робити?", message: "Зійшло сонце - Ви не встигли", preferredStyle: .actionSheet)
+            let action = UIAlertAction(title: "спробувати ще раз", style: .default, handler: { (act) in
+                self.currentPage = 0
+                self.setPage(0)
+            } )
+            uControl.addAction(action)
+            self.ownAlertController = uControl
+            self.temporaryString = self.textStoryLabel.text!
             return
         }
-        self.items.append(contentsOf: startInfo.items)
+        
+        if startInfo.items.contains("серце ченця стало сильнішим") {
+            if let power = self.powerOfMonkHart {
+                self.powerOfMonkHart = power + 1
+                self.items.append("Cерце ченця стало сильнішим, його сила - \(self.powerOfMonkHart!)")
+            }
+        } else if startInfo.items.contains("знайдено серце ченця") {
+            self.powerOfMonkHart = 0
+            self.items.append("Знайдено серце ченця, сила - \(self.powerOfMonkHart!)")
+        } else {
+            self.items.append(contentsOf: startInfo.items)
+        }
         if let text = startInfo.buttonText {
             self.setButtonTitle(text)
         } else {
@@ -90,6 +138,7 @@ class ViewController: UIViewController {
             }
         }
         let uControl = UIAlertController(title: "Що робити?", message: "Оберіть дію", preferredStyle: .actionSheet)
+        
         startInfo.jumpers.forEach { (jumper) in
             let action = UIAlertAction(title: jumper.textJumper, style: .default, handler: { (act) in
                 self.currentPage = jumper.idJumper
@@ -97,23 +146,23 @@ class ViewController: UIViewController {
             } )
             uControl.addAction(action)
         }
-        do {
-            try startInfo.hiddenActivations.forEach { (hiddenjumpers) in
-                if self.items.contains(hiddenjumpers.item) {
-                    uControl.addAction(addAction(hiddenjumpers.textJumper, Int(hiddenjumpers.idJumper)))
-                }
-                if hiddenjumpers.item == "time" {
-                    if (hiddenjumpers.condition == ">") && (self.currentTime>hiddenjumpers.timer) {
-                        uControl.addAction(addAction(hiddenjumpers.textJumper + " n=\(hiddenjumpers.idJumper)", Int(hiddenjumpers.idJumper)))
-                   } else if (hiddenjumpers.condition == "<") && (self.currentTime<=hiddenjumpers.timer) {
-                            uControl.addAction(addAction(hiddenjumpers.textJumper + " n=\(hiddenjumpers.idJumper)", Int(hiddenjumpers.idJumper)))
-                        }
-                }
+        startInfo.hiddenActivations.forEach { (hiddenjumpers) in
+            if self.items.contains(hiddenjumpers.item) {
+                uControl.addAction(addAction(hiddenjumpers.textJumper, Int(hiddenjumpers.idJumper)))
             }
-        } catch {
-            print("some Error catched")
-        }
+            if hiddenjumpers.item == "time" {
+                if (hiddenjumpers.condition == ">") && (self.currentTime>hiddenjumpers.timer) {
+                    uControl.addAction(addAction(hiddenjumpers.textJumper + " n=\(hiddenjumpers.idJumper)", Int(hiddenjumpers.idJumper)))
+                } else if (hiddenjumpers.condition == "<") && (self.currentTime<=hiddenjumpers.timer) {
+                        uControl.addAction(addAction(hiddenjumpers.textJumper + " n=\(hiddenjumpers.idJumper)", Int(hiddenjumpers.idJumper)))
+                    }
+            }
+            if hiddenjumpers.item == "смерть в реальному світі" {
+                uControl.addAction(addAction(hiddenjumpers.textJumper + " n=\(hiddenjumpers.idJumper)", Int(hiddenjumpers.idJumper)))
+            }
+        } 
         self.ownAlertController = uControl
+        self.temporaryString = self.textStoryLabel.text!
     }
     
     private func setButtonTitle(_ textForButton: String){
