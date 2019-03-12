@@ -129,8 +129,8 @@ class ViewController: UIViewController {
             self.setButtonTitle(text)
         } else {
             let hour: Int = (self.currentTime/60)
-            let minutes = self.currentTime - (hour * 60)
-            let text = "Зараз \(((hour)<6) ? (12-hour) : (24-hour)):\(minutes). \n Треба встигнути до сходу сонця"
+            let minutes = ((hour + 1) * 60) - self.currentTime
+            let text = "Зараз \(((hour)>6) ? (30-hour) : (6-hour)):\(minutes==60 ? 0: minutes). \n Треба встигнути до сходу сонця"
             if self.testState {
                 self.setButtonTitle(text + " номер стор.: \(pageNumber)")
             } else {
@@ -147,9 +147,13 @@ class ViewController: UIViewController {
             uControl.addAction(action)
         }
         startInfo.hiddenActivations.forEach { (hiddenjumpers) in
-            if self.items.contains(hiddenjumpers.item) {
+            if (hiddenjumpers.condition == "-") && (self.items.contains(hiddenjumpers.item)) {
+                self.items.firstIndex(of: hiddenjumpers.item)
+                
+            } else if self.items.contains(hiddenjumpers.item) {
                 uControl.addAction(addAction(hiddenjumpers.textJumper, Int(hiddenjumpers.idJumper)))
             }
+            
             if hiddenjumpers.item == "time" {
                 if (hiddenjumpers.condition == ">") && (self.currentTime>hiddenjumpers.timer) {
                     uControl.addAction(addAction(hiddenjumpers.textJumper + " n=\(hiddenjumpers.idJumper)", Int(hiddenjumpers.idJumper)))
