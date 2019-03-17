@@ -38,7 +38,7 @@ class ViewController: UIViewController {
         self.ownAlertController.addAction(action)
     
         print("1 init")
-        DecoderJSON().decode(dataArray: &datasArray, "StoryData.json")
+        DecoderJSON().decode(dataArray: &datasArray, "StoryData")
     }
     
     override func viewDidLoad() {

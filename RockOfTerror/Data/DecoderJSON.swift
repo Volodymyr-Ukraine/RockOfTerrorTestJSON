@@ -11,9 +11,10 @@ import Foundation
 class DecoderJSON: Codable{
     
     func decode<T: Codable> (dataArray: inout T, _ inputJSONText: String) {
-        let homeDirectory = "/Users/vova/Documents/Git_inout/RockOfTerror/RockOfTerror/RockOfTerror/Data"
-        // let homeDirectory = "https://github.com/Volodymyr-Ukraine/Classes/blob/master/RockOfTerror/RockOfTerror/RockOfTerror/Data"
-        let path = "\(homeDirectory)/\(inputJSONText)"
+        guard let path = Bundle.main.path(forResource: "\(inputJSONText)", ofType: "json") else {
+            print("File JSON not found")
+            return
+        }
         let expandedPath = URL(fileURLWithPath: path)
         print(expandedPath)
         let text = try! String(contentsOf: expandedPath)
