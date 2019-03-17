@@ -12,6 +12,7 @@ class DecoderJSON: Codable{
     
     func decode<T: Codable> (dataArray: inout T, _ inputJSONText: String) {
         let homeDirectory = "/Users/vova/Documents/Git_inout/RockOfTerror/RockOfTerror/RockOfTerror/Data"
+        // let homeDirectory = "https://github.com/Volodymyr-Ukraine/Classes/blob/master/RockOfTerror/RockOfTerror/RockOfTerror/Data"
         let path = "\(homeDirectory)/\(inputJSONText)"
         let expandedPath = URL(fileURLWithPath: path)
         print(expandedPath)
@@ -20,10 +21,10 @@ class DecoderJSON: Codable{
         do {
             dataArray = try decoder.decode([Data].self, from: text.data(using: .utf8)!) as! T
             // let data = try decoder.decode(Data.self, from: text.data(using: .utf8)!)
-            print("ura")
+           // print("ura")
             //print(dataArray)
         } catch {
-            print("error")
+            print("error in decoding JSON")
         }
     }
 }

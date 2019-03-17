@@ -138,7 +138,16 @@ class ViewController: UIViewController {
             }
         }
         let uControl = UIAlertController(title: "Що робити?", message: "Оберіть дію", preferredStyle: .actionSheet)
-        
+        // MARK: TEST changes
+        // Set "true" for test button
+        if false {
+            let action = UIAlertAction(title: "Наступна", style: .default, handler: { (act) in
+                self.currentPage = pageNumber+1
+                self.setPage(pageNumber+1)
+            } )
+            uControl.addAction(action)
+        }
+        // END OF TEST
         startInfo.jumpers.forEach { (jumper) in
             let action = UIAlertAction(title: jumper.textJumper, style: .default, handler: { (act) in
                 self.currentPage = jumper.idJumper
@@ -147,9 +156,10 @@ class ViewController: UIViewController {
             uControl.addAction(action)
         }
         startInfo.hiddenActivations.forEach { (hiddenjumpers) in
-            if (hiddenjumpers.condition == "-") && (self.items.contains(hiddenjumpers.item)) {
-                self.items.firstIndex(of: hiddenjumpers.item)
-                
+            if (hiddenjumpers.condition == "-") {
+                if let index = self.items.firstIndex(of: hiddenjumpers.item) {
+                    self.items.remove(at: index)
+                }
             } else if self.items.contains(hiddenjumpers.item) {
                 uControl.addAction(addAction(hiddenjumpers.textJumper, Int(hiddenjumpers.idJumper)))
             }
