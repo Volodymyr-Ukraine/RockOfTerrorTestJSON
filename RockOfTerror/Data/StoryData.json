@@ -138,10 +138,6 @@
             {
                 "textJumper": "Північний захід",
                 "idJumper": 66
-            },
-            {
-                "textJumper": "Test jump",
-                "idJumper": 3
             }
         ],
         "hiddenActivations": [

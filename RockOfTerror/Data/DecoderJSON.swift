@@ -21,9 +21,6 @@ class DecoderJSON: Codable{
         let decoder = JSONDecoder()
         do {
             dataArray = try decoder.decode([Data].self, from: text.data(using: .utf8)!) as! T
-            // let data = try decoder.decode(Data.self, from: text.data(using: .utf8)!)
-           // print("ura")
-            //print(dataArray)
         } catch {
             print("error in decoding JSON")
         }

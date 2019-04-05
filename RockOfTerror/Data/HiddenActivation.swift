@@ -15,13 +15,3 @@ struct HiddenActivation: Codable {
     var item: String
     var textJumper: String
 }
-/*
- "hiddenActivations": [
- {
- "timer": 0,
- "item": "sword",
- "condition": "=",
- "textJumper": "that way",
- "idJumper": 25
- },
- // */
